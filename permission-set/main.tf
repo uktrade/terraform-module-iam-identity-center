@@ -40,3 +40,25 @@ resource "aws_ssoadmin_managed_policy_attachment" "aws_managed_policies" {
     managed_policy_arn = data.aws_iam_policy.aws_managed_policies[each.value.name].arn
 }
 
+## Attached "External" Customer-managed Policies. These are not defined in this repo.
+## Use with caution since these policies might be changed without warning by other code changes.
+## The policies must exist in the accounts targetted by the Permission Set Entitlement.
+
+locals {
+    external_customer_managed_policies_map_by_name = {
+        for external_customer_managed_policy in try( var.args.external_customer_managed_policies, [] ) : external_customer_managed_policy.name => {
+            name = external_customer_managed_policy.name
+            path = try( external_customer_managed_policy.path, "/" )
+        }
+    }
+}
+
+resource "aws_ssoadmin_customer_managed_policy_attachment" "external_customer_managed_policies" {
+    for_each = local.external_customer_managed_policies_map_by_name
+    instance_arn = var.identity_store.arns[0]
+    permission_set_arn = aws_ssoadmin_permission_set.permission_set.arn
+    customer_managed_policy_reference {
+        name = each.value.name
+        path = each.value.path
+    }
+}

@@ -14,3 +14,6 @@ output "aws_managed_policy_attachment" {
     value = aws_ssoadmin_managed_policy_attachment.aws_managed_policies
 }
 
+output "customer_managed_policy_attachment" {
+    value = aws_ssoadmin_customer_managed_policy_attachment.external_customer_managed_policies
+}
