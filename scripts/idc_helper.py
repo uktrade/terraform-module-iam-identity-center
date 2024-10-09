@@ -318,14 +318,14 @@ if __name__ == "__main__":
         logger.debug(f"permission_sets: {permission_sets}")
         for permission_set in permission_sets:
             logger.info(f"######### permission_set: {permission_set}")
+            permission_set_name=get_permission_set_property(permission_set,'Name')
+            logger.debug(f"permission_set_name: {permission_set_name}")
             permission_set_accounts=get_permission_set_accounts(permission_set)
             logger.debug(f"permission_set_accounts: {permission_set_accounts}")
             logger.info(f"Permission set in {len(permission_set_accounts)} accounts.")
             for permission_set_account in permission_set_accounts:
                 logger.debug(f"permission_set, permission_set_account: {permission_set},{permission_set_account}")
                 account_name=AWS_ACCOUNTS[permission_set_account]
-                permission_set_name=get_permission_set_property(permission_set,'Name')
-                logger.debug(f"permission_set_name: {permission_set_name}")
                 account_assignments=get_account_assignments(permission_set,permission_set_account)
                 logger.debug(f"account_assignments: {account_assignments}")
                 for account_assignment in account_assignments:
