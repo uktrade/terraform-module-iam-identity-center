@@ -341,4 +341,40 @@ if __name__ == "__main__":
                     logger.info(output)
                     f.write(output+'\n')
 
+    elif args[1].lower()=="get-users-for-account":
+        f.write('account_id,account_name,permission_set_name,principal_type,group_name,user_name,user_display_name\n')
+        account_name=args[2]
+        logger.info(f"account_name: {account_name}")
+        account_id=list(AWS_ACCOUNTS.keys())[list(AWS_ACCOUNTS.values()).index(account_name)] # Look up the Accounta dictionary in reverse to get the ID from the name.
+        logger.info(f"account_id: {account_id}")
+        provisioned_permission_sets=get_provisioned_permission_sets(account_id)
+        logger.debug(f"provisioned_permission_sets: {provisioned_permission_sets}")
+        for provisioned_permission_set in provisioned_permission_sets:
+            assignments=get_account_assignments(provisioned_permission_set,account_id)
+            logger.debug(f"assignments: {assignments}")
+            for assignment in assignments:
+                logger.debug(f"PrincipalId: {assignment['PrincipalId']}")
+                logger.info(f"PrincipalType: {assignment['PrincipalType']}")
+                principal=get_principal(assignment['PrincipalId'], assignment['PrincipalType'])
+                logger.info(f"principal: {principal['DisplayName']}")
+                permission_set_name=get_permission_set_property(provisioned_permission_set,'Name')
+                logger.info(f"permission_set_name: {permission_set_name}")
+                if assignment['PrincipalType']=="GROUP":
+                    group_members=get_group_members(assignment['PrincipalId'])
+                    logger.debug(f"group_members: {group_members}")
+                    for group_member in group_members:
+                        logger.debug(f"group_member: {group_member}")
+                        logger.debug(f"UserId: {group_member['MemberId']['UserId']}")
+                        group_member_details=get_principal(group_member['MemberId']['UserId'], "USER")
+                        logger.debug(f"group_member_details: {group_member_details}")
+                        output=f"{account_id},{account_name},{permission_set_name},{assignment['PrincipalType']},{principal['DisplayName']},{group_member_details['Description']},{group_member_details['DisplayName']}"
+                        logger.info(output)
+                        f.write(output+'\n')
+                elif assignment['PrincipalType']== "USER":
+                    user_details=get_principal(assignment['PrincipalId'], "USER")
+                    logger.debug(f"user_details: {user_details}")
+                    output=f"{account_id},{account_name},{permission_set_name},{assignment['PrincipalType']},N/A,{user_details['Description']},{user_details['DisplayName']}"
+                    logger.info(output)
+                    f.write(output+'\n')
+
     f.close()
