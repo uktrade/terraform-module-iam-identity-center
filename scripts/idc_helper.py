@@ -317,7 +317,7 @@ if __name__ == "__main__":
         permission_sets=get_permission_sets()
         logger.debug(f"permission_sets: {permission_sets}")
         for permission_set in permission_sets:
-            logger.info(f"######### permission_set: {permission_set}")
+            logger.info(f"permission_set: {permission_set}")
             permission_set_name=get_permission_set_property(permission_set,'Name')
             logger.debug(f"permission_set_name: {permission_set_name}")
             permission_set_accounts=get_permission_set_accounts(permission_set)
