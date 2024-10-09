@@ -279,6 +279,8 @@ def get_user_id(AttributePath,AttributeValue):
         }]
     )
     logger.debug(f"user: {user}")
+    if len(user["Users"])==0:
+        raise Exception("User or UserId not found.")
     return user["Users"][0]["UserId"]
 
 
