@@ -285,3 +285,29 @@ def get_user_id(AttributePath,AttributeValue):
 # Constants
 AWS_ACCOUNTS=get_accounts() # Used to cache account IDs to Names and avoid repeated API calls since we reference this a lot.
 
+
+if __name__ == "__main__":
+
+    args=sys.argv
+    logger.debug(f"args: {args}")
+    if len(args)<2:
+        print_help()
+
+    f = open("idc_helper.csv", "w")
+
+    if args[1].lower()=="get-group-members":
+        f.write('group_name,user_name\n')
+        groups=get_groups()
+        logger.debug(f"groups: {groups}")
+        for group in groups:
+            logger.debug(f"group: {group}")
+            group_members=get_group_members(group["GroupId"])
+            logger.debug(f"group_members: {group_members}")
+            for group_member in group_members:
+                logger.debug(f"group_member: {group_member}")
+                user=get_user_property(group_member["MemberId"]["UserId"],"UserName")
+                output=f"{group['DisplayName']},{user}"
+                logger.info(output)
+                f.write(output+"\n")
+
+    f.close()
