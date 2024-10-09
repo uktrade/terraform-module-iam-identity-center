@@ -343,8 +343,12 @@ if __name__ == "__main__":
 
     elif args[1].lower()=="get-users-for-accounts":
         f.write('account_id,account_name,permission_set_name,principal_type,group_name,user_name,user_display_name\n')
-        account_names=args[2].split(",")
+        if args[2].lower()=="all":
+            account_names=AWS_ACCOUNTS.values()
+        else:
+            account_names=args[2].split(",")
         logger.debug(f"account_names: {account_names}")
+        logger.info(f"Processing {len(account_names)} account(s).")
         for account_name in account_names:
             logger.info(f"account_name: {account_name}")
             account_id=list(AWS_ACCOUNTS.keys())[list(AWS_ACCOUNTS.values()).index(account_name)] # Look up the Accounta dictionary in reverse to get the ID from the name.
