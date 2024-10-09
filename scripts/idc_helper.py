@@ -281,3 +281,7 @@ def get_user_id(AttributePath,AttributeValue):
     logger.debug(f"user: {user}")
     return user["Users"][0]["UserId"]
 
+
+# Constants
+AWS_ACCOUNTS=get_accounts() # Used to cache account IDs to Names and avoid repeated API calls since we reference this a lot.
+
