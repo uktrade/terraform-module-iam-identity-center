@@ -157,3 +157,127 @@ def get_permission_set_accounts(permission_set):
         else:
             return accounts
 
+
+def get_principal(PrincipalId, PrincipalType):
+    logger.debug(f"PrincipalId, PrincipalType: {PrincipalId},{PrincipalType}")
+    principal={}
+    if PrincipalType == "GROUP":
+        principal_group = idc_client.describe_group(
+            IdentityStoreId=client_sso_instance["IdentityStoreId"],
+            GroupId=PrincipalId
+        )
+        logger.debug(f"principal_group: {principal_group}")
+        if "Description" not in principal_group:
+            principal_group["Description"]=""
+        principal["PrincipalId"]=principal_group["GroupId"]
+        principal["DisplayName"]=principal_group["DisplayName"]
+        principal["Description"]=principal_group["Description"]
+    elif PrincipalType == "USER":
+        try:
+            principal_user = idc_client.describe_user(
+                IdentityStoreId=client_sso_instance["IdentityStoreId"],
+                UserId=PrincipalId
+            )
+            logger.debug(f"principal_user: {principal_user}")
+            principal["PrincipalId"]=principal_user["UserId"]
+            principal["DisplayName"]=principal_user["DisplayName"]
+            principal["Description"]=principal_user["UserName"]
+        except idc_client.exceptions.ResourceNotFoundException:
+            principal["PrincipalId"]=PrincipalId
+            principal["DisplayName"]=PrincipalType
+            principal["Description"]="NOT FOUND"
+    logger.debug(f"principal: {principal}")
+    return principal
+
+def get_groups():
+    group_list = []
+    groups = idc_client.list_groups(
+        IdentityStoreId=client_sso_instance["IdentityStoreId"],
+        MaxResults=100
+    )
+    logger.debug(f"groups: {groups}")
+    while True:
+        group_list.extend(groups["Groups"])
+        if "NextToken" in groups:
+            groups = idc_client.list_groups(
+                IdentityStoreId=client_sso_instance["IdentityStoreId"],
+                MaxResults=100,
+                NextToken=groups["NextToken"]
+            )
+        else:
+            return group_list
+
+def get_group_property(GroupId,property):
+    group = idc_client.describe_group(
+        IdentityStoreId=client_sso_instance["IdentityStoreId"],
+        GroupId=GroupId
+    )
+    logger.debug(f"group: {group}")
+    return group[property]
+
+def get_user_groups(user_id):
+    group_list = []
+    groups = idc_client.list_group_memberships_for_member(
+        IdentityStoreId=client_sso_instance["IdentityStoreId"],
+        MemberId={'UserId':user_id},
+        MaxResults=100
+    )
+    logger.debug(f"groups: {groups}")
+    logger.debug(f"GroupMemberships: {groups['GroupMemberships']}")
+    while True:
+        group_list.extend(groups["GroupMemberships"])
+        if "NextToken" in groups:
+            groups = idc_client.list_group_memberships_for_member(
+                IdentityStoreId=client_sso_instance["IdentityStoreId"],
+                MemberId={'UserId':user_id},
+                MaxResults=100,
+                NextToken=groups["NextToken"]
+            )
+        else:
+            return group_list
+
+def get_group_members(groupid):
+    logger.debug(f"groupid: {groupid}")
+    members = []
+    group_memberships = idc_client.list_group_memberships(
+        IdentityStoreId=client_sso_instance["IdentityStoreId"],
+        GroupId=groupid,
+        MaxResults=100
+    )
+    logger.debug(f"group_memberships: {group_memberships}")
+    while True:
+        members.extend(group_memberships["GroupMemberships"])
+        if "NextToken" in group_memberships:
+            group_memberships = idc_client.list_group_memberships(
+                IdentityStoreId=client_sso_instance["IdentityStoreId"],
+                GroupId=groupid,
+                MaxResults=100,
+                NextToken=group_memberships["NextToken"]
+            )
+            logger.debug(f"group_memberships: {group_memberships}")
+        else:
+            break
+    return members
+
+def get_user_property(userid,property):
+    logger.debug(f"userid, property: {userid},{property}")
+    user = idc_client.describe_user(
+        IdentityStoreId=client_sso_instance["IdentityStoreId"],
+        UserId=userid
+    )
+    logger.debug(f"user: {user}")
+    return user[property]
+
+def get_user_id(AttributePath,AttributeValue):
+    logger.debug(f"AttributePath: {AttributePath}")
+    logger.debug(f"AttributeValue: {AttributeValue}")
+    user = idc_client.list_users(
+        IdentityStoreId=client_sso_instance["IdentityStoreId"],
+        Filters=[{
+            'AttributePath': AttributePath,
+            'AttributeValue': AttributeValue
+        }]
+    )
+    logger.debug(f"user: {user}")
+    return user["Users"][0]["UserId"]
+
