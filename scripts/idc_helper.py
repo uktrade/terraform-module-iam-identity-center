@@ -86,6 +86,16 @@ def get_accounts():
             break
     return account_dict
 
+# Look up the Accounta dictionary in reverse to get the ID from the name.
+def get_account_id_from_name(account_name):
+    try:
+        account_id=list(AWS_ACCOUNTS.keys())[list(AWS_ACCOUNTS.values()).index(account_name)]
+    except ValueError:
+        logger.error(f"Account name {account_name} or account ID not found.")
+        quit()
+    logger.debug(f"account_id: {account_id}")
+    return account_id
+
 def get_account_property(AccountId,property):
     account = org_client.describe_account(
         AccountId=AccountId
