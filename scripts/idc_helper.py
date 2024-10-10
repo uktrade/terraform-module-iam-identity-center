@@ -358,6 +358,22 @@ if __name__ == "__main__":
                     logger.info(f"Group '{found_group_name}' has permission set '{found_permission_set_name}'.")
                     output=f"{account_id},{account_name},{found_group_name},{found_permission_set_name}"
                     f.write(output+"\n")
+                                                   
+    elif args[1].lower()=="get-accounts-for-group":
+        f.write('account_id,account_name,group,permission_set\n')
+        group_name=args[2]
+        logger.info(f"group_name: {group_name}")
+        group_id=get_group_id("DisplayName",group_name)
+        logger.debug(f"group_id: {group_id}")
+        account_assignments_for_principal=get_account_assignments_for_principal(group_id,'GROUP')
+        logger.debug(f"account_assignments_for_principal: {account_assignments_for_principal}")
+        for account_assignment_for_principal in account_assignments_for_principal:
+            logger.debug(f"account_assignment_for_principal: {account_assignment_for_principal}")
+            permission_set_name=get_permission_set_property(account_assignment_for_principal["PermissionSetArn"],'Name')
+            account_id=account_assignment_for_principal['AccountId']
+            logger.info(f"Can access account '{account_id}' ({AWS_ACCOUNTS[account_id]}) with permission set '{permission_set_name}'.")
+            output=f"{account_id},{AWS_ACCOUNTS[account_id]},{group_name},{permission_set_name}"
+            f.write(output+"\n")
 
     elif args[1].lower()=="get-entitlements":
         f.write('account_id,account_name,permission_set_name,principal_type,principal_name,principal_description\n')
