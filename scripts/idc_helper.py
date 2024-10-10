@@ -215,6 +215,21 @@ def get_group_property(GroupId,property):
     logger.debug(f"group: {group}")
     return group[property]
 
+def get_group_id(AttributePath,AttributeValue):
+    logger.debug(f"AttributePath: {AttributePath}")
+    logger.debug(f"AttributeValue: {AttributeValue}")
+    group = idc_client.list_groups(
+        IdentityStoreId=client_sso_instance["IdentityStoreId"],
+        Filters=[{
+            'AttributePath': AttributePath,
+            'AttributeValue': AttributeValue
+        }]
+    )
+    logger.debug(f"group: {group}")
+    if len(group["Groups"])==0:
+        raise Exception("Group or GroupId not found.")
+    return group["Groups"][0]["GroupId"]
+
 def get_user_groups(user_id):
     group_list = []
     groups = idc_client.list_group_memberships_for_member(
