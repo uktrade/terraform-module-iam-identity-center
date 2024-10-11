@@ -446,4 +446,25 @@ if __name__ == "__main__":
                         logger.info(output)
                         f.write(output+'\n')
 
+    elif args[1].lower()=="get-permissions-for-user":
+        f.write('user_name,group_name,account_id,account_name,permission_set\n')
+        user_name=args[2]
+        logger.info(f"user_name: {user_name}")
+        user_id=get_user_id("UserName",user_name)
+        logger.info(f"user_id: {user_id}")
+        account_assignments_for_principal=get_account_assignments_for_principal(user_id,'USER')
+        logger.debug(f"account_assignments_for_principal: {account_assignments_for_principal}")
+        for account_assignment_for_principal in account_assignments_for_principal:
+            logger.debug(f"account_assignment_for_principal: {account_assignment_for_principal}")
+            permission_set_name=get_permission_set_property(account_assignment_for_principal['PermissionSetArn'], 'Name')
+            logger.debug(f"permission_set_name: {permission_set_name}")
+            if account_assignment_for_principal['PrincipalType']=="GROUP":
+                group_name=get_group_property(account_assignment_for_principal["PrincipalId"],'DisplayName')
+                logger.debug(f"group_name: {group_name}")
+            else:
+                group_name="N/A"
+            output=f"{user_name},{group_name},{account_assignment_for_principal['AccountId']},{AWS_ACCOUNTS[account_assignment_for_principal['AccountId']]},{permission_set_name}"
+            logger.info(output)
+            f.write(output+'\n')
+
     f.close()
