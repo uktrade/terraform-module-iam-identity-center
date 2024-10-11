@@ -322,7 +322,7 @@ if __name__ == "__main__":
     if len(args)<2:
         print_help()
 
-    elif args[1].lower()=="get-group-members":
+    elif args[1].lower()=="list-group-members":
         f.write('group_name,user_name\n')
         groups=get_groups()
         logger.debug(f"groups: {groups}")
@@ -375,7 +375,7 @@ if __name__ == "__main__":
             output=f"{account_id},{AWS_ACCOUNTS[account_id]},{group_name},{permission_set_name}"
             f.write(output+"\n")
 
-    elif args[1].lower()=="get-entitlements":
+    elif args[1].lower()=="list-entitlements":
         f.write('account_id,account_name,permission_set_name,principal_type,principal_name,principal_description\n')
         permission_sets=get_permission_sets()
         logger.debug(f"permission_sets: {permission_sets}")
