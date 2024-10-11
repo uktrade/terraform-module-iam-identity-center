@@ -1,3 +1,21 @@
+"""
+Helper script for AWS Identity Centre
+
+This script provides information that's difficult to obtain from the IDC console (without a lot of clicking around) and cannot be exported.
+All commands log to the console and write to CSV (idc_helper.csv).
+
+SYNTAX:
+python idc_helper.py COMMAND [OPTION]
+
+COMMANDS:
+list-entitlements - Fully expands all 'Entitlements' (accounts, permission sets, users / groups).
+list-group-members - Provides a list of all groups and the group members.
+get-groups-for-account - OPTION required here is an account name / alias. Lists all groups that can access the account (and the permission sets).
+get-accounts-for-group - OPTION required here is a group name. Lists all accounts that can be accessed by members of the group (and the permission sets).
+get-permissions-for-user - OPTION required here is a username. Lists all accounts a user can access (with permission set) and whether direct or via a group.
+get-users-for-accounts - OPTION required here is an account name / alias (or a comma-separated list - no spaces). Shows all users who can access the account, and via group or direct access.
+"""
+
 import boto3
 import sys
 import os
@@ -319,8 +337,8 @@ if __name__ == "__main__":
     
     args=sys.argv
     logger.debug(f"args: {args}")
-    if len(args)<2:
-        print_help()
+    if len(args)<2 or args[1].lower()=="help":
+        print(__doc__)
 
     elif args[1].lower()=="list-group-members":
         f.write('group_name,user_name\n')
@@ -466,5 +484,8 @@ if __name__ == "__main__":
             output=f"{user_name},{group_name},{account_assignment_for_principal['AccountId']},{AWS_ACCOUNTS[account_assignment_for_principal['AccountId']]},{permission_set_name}"
             logger.info(output)
             f.write(output+'\n')
+
+    else:
+        print(__doc__)
 
     f.close()
