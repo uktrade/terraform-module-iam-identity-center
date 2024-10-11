@@ -16,7 +16,7 @@ get-permissions-for-user - OPTION required here is a username. Lists all account
 get-users-for-accounts - OPTION required here is an account name / alias (or a comma-separated list - no spaces). Shows all users who can access the account, and via group or direct access.
 """
 
-import boto3
+import boto3, botocore
 import sys
 import os
 import logging
@@ -32,12 +32,18 @@ logger.addHandler(log)
 
 # Boto3 initialisation
 ## Session
-boto3_session = boto3.Session(profile_name=os.environ['AWS_PROFILE'])
+try:
+    boto3_session = boto3.Session(profile_name=os.environ['AWS_PROFILE'])
+except KeyError:
+    raise Exception("Ensure env var AWS_PROFILE is set.")
 ## Identity Centre Client
 idc_client = boto3_session.client('identitystore')
 ## SSO Client
 sso_client = boto3_session.client('sso-admin')
-client_sso_instance = sso_client.list_instances()["Instances"][0]
+try:
+    client_sso_instance = sso_client.list_instances()["Instances"][0]
+except botocore.exceptions.SSOTokenLoadError:
+    raise Exception("SSO Token Error. Ensure your session is logged in and not expired.")
 logger.debug(f"client_sso_instance: {client_sso_instance}")
 ## AWS ORganisation Client
 org_client = boto3_session.client('organizations')
