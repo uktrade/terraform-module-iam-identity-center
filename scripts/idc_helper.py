@@ -315,14 +315,14 @@ AWS_ACCOUNTS=get_accounts() # Used to cache account IDs to Names and avoid repea
 
 if __name__ == "__main__":
 
+    f = open("idc_helper.csv", "w")
+    
     args=sys.argv
     logger.debug(f"args: {args}")
     if len(args)<2:
         print_help()
 
-    f = open("idc_helper.csv", "w")
-
-    if args[1].lower()=="get-group-members":
+    elif args[1].lower()=="get-group-members":
         f.write('group_name,user_name\n')
         groups=get_groups()
         logger.debug(f"groups: {groups}")
