@@ -43,7 +43,7 @@ locals {
     # Build a list of entitlements.
     entitlement_list = flatten([
         for role in var.args.roles : [
-            for permission_set in try( role.permission_sets, [] ) : [
+            for permission_set in try( role.permission_sets, [] ) : concat([
                 for account_set in try( permission_set.account_sets, [] ) : [
                     for account_set_accounts in local.account_set_map[account_set] : {
                         team = var.args.team.name
@@ -52,7 +52,16 @@ locals {
                         permission_set = permission_set.name
                     }
                 ]
-            ]
+            ],[
+                for ou in try( permission_set.ous, [] ) : [
+                    for ou_account in var.org_ou_account_map.descendant_accounts[ou].active : {
+                        team = var.args.team.name
+                        role = role.name
+                        account = ou_account
+                        permission_set = permission_set.name
+                    }
+                ]
+            ])
         ]
     ])
     # Create a map of entitlements from the list, keyed by "team_role_account" to be unique.
