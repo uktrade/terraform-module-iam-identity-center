@@ -36,7 +36,7 @@ locals {
 
     # A map of account_sets, keyed by name.
     account_set_map = {
-        for account_set in var.args.account_sets :
+        for account_set in try( var.args.account_sets, [] ) :
             account_set.name => toset(account_set.accounts)
     }
 
