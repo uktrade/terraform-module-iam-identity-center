@@ -17,3 +17,9 @@ variable "aws_account_map" {
   description = "A map of organisation accounts, keyed by name."
   type = map(string)
 }
+
+variable "org_ou_account_map" {
+  description = "A map of organisation OUs and AWS accounts."
+  type = map(any)
+  default = {}
+}
