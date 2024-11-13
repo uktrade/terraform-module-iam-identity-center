@@ -5,7 +5,7 @@ resource "aws_ssoadmin_permission_set" "permission_set" {
   name = var.args.name
   description = var.args.description
   relay_state = try( var.args.relay_state, null )
-  session_duration = try( var.args.relay_state, "PT1H" )
+  session_duration = try( var.args.session_duration, "PT1H" )
   tags = var.tags
 }
 
