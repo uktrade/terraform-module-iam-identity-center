@@ -86,3 +86,30 @@ resource "aws_ssoadmin_account_assignment" "entitlements" {
     target_id = var.aws_account_map[each.value.account] # The ID of the AWS account. Lookup the account id from the name in var.aws_account_map
     target_type = "AWS_ACCOUNT"
 }
+
+## Application Entitlements (aka Group-Application mapping)
+
+locals {
+    # A map of applications, keyed by name.
+    application_map_by_name = {
+        for application in var.applications : "${application.sso_application.name}" => application.sso_application
+    }
+    # Build a list of applications.
+    application_list = flatten([
+        for role in var.args.roles : [
+            for application in try( role.applications, [] ) : {
+                team = var.args.team.name
+                role = role.name
+                application_name = application
+            }
+        ]
+    ])
+    # Create a map of applications from the list, keyed by "team_role_application" to be unique.
+    application_map = {
+        for application in local.application_list : "${application.team}_${application.role}_${application.application_name}" => {
+            group = "${application.team}_${application.role}"
+            application_name = application.application_name
+            application_arn = local.application_map_by_name[application.application_name].application_arn
+        }
+    }
+}
