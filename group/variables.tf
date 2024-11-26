@@ -13,6 +13,12 @@ variable "permission_sets" {
   type = map(any)
 }
 
+variable "applications" {
+  description = "A map of application resources from the application module."
+  type = map(any)
+  default = {}
+}
+
 variable "aws_account_map" {
   description = "A map of organisation accounts, keyed by name."
   type = map(string)
