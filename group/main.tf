@@ -25,7 +25,9 @@ resource "aws_identitystore_group" "groups" {
     identity_store_id = var.identity_store.identity_store_ids[0]
 }
 
-# Entitlements (aka Group-PermissionSet-Account mapping)
+# Entitlements
+
+## Permission-set Entitlements (aka Group-PermissionSet-Account mapping)
 
 locals {
     # Change this map from being keyed by filename to keyed by permission_set.name, which is more useful here.
