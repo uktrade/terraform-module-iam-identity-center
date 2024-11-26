@@ -113,3 +113,10 @@ locals {
         }
     }
 }
+
+resource "aws_ssoadmin_application_assignment" "application_assignments" {
+  for_each = local.application_map
+  principal_id = aws_identitystore_group.groups[each.value.group].group_id
+  principal_type  = "GROUP"
+  application_arn = each.value.application_arn
+}
