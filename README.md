@@ -143,12 +143,10 @@ module "org" {
 ...allows the `module.org.org_ou_account_map` output to then be used in the Group module, so OU names can be used in group definitions.
 ```
 module "group" {
-  source = "github.com/uktrade/terraform-module-iam-identity-center//group"
-  # [other parameters here]
-  identity_store = data.aws_ssoadmin_instances.sso
-  permission_sets = module.permission_sets
-  applications = module.applications
-  # [other parameters here]
+  source             = "github.com/uktrade/terraform-module-iam-identity-center//group"
+  identity_store     = data.aws_ssoadmin_instances.sso
+  permission_sets    = module.permission_sets
+  applications       = module.applications
   org_ou_account_map = module.org.org_ou_account_map
 }
 ```
