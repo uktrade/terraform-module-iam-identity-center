@@ -131,6 +131,26 @@ portal_options:
 ...
 ```
 
+### Organisations
+The Organisation module provides organisation / OU data. Further detail and an example is provided in the module [README](org/README.md).
+
+For example, calling the 'org' module...
+```HCL
+module "org" {
+  source = "github.com/uktrade/terraform-module-iam-identity-center//org"
+}
+```
+...allows the `module.org.org_ou_account_map` output to then be used in the Group module, so OU names can be used in group definitions.
+```
+module "group" {
+  source = "github.com/uktrade/terraform-module-iam-identity-center//group"
+  ...
+  ...
+  org_ou_account_map = module.org.org_ou_account_map
+}
+```
+**Note**: This module does not create OUs.
+
 ### Scripts
 #### idc_helper.py ####
 This script provides some information that's difficult to get from the IDC UI (without a lot of clicking). Each command also writes the results to a CSV for further analysis.
