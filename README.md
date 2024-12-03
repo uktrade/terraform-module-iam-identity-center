@@ -144,8 +144,11 @@ module "org" {
 ```
 module "group" {
   source = "github.com/uktrade/terraform-module-iam-identity-center//group"
-  ...
-  ...
+  # [other parameters here]
+  identity_store = data.aws_ssoadmin_instances.sso
+  permission_sets = module.permission_sets
+  applications = module.applications
+  # [other parameters here]
   org_ou_account_map = module.org.org_ou_account_map
 }
 ```
