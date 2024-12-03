@@ -141,7 +141,7 @@ module "org" {
 }
 ```
 ...allows the `module.org.org_ou_account_map` output to then be used in the Group module, so OU names can be used in group definitions.
-```
+```HCL
 module "group" {
   source             = "github.com/uktrade/terraform-module-iam-identity-center//group"
   identity_store     = data.aws_ssoadmin_instances.sso
